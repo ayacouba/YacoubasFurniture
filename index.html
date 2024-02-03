@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yacouba's Furniture</title>
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header>
+      <nav>
+        <img
+          src="images/burger.svg"
+          alt="Menu"
+          class="menu-icon"
+          onclick="toggleMenu()"
+        />
+
+        <ul class="nav-links">
+          <li><a href="#chairs">Chairs</a></li>
+          <li><a href="#tables">Tables</a></li>
+          <li><a href="#sofas">Sofas</a></li>
+          <li>
+            <a href="#cart">
+              <img
+                src="images/shopping-cart.svg"
+                alt="Cart"
+                class="cart-icon"
+              />
+            </a>
+          </li>
+          <li><a href="#sign-in">Sign In</a></li>
+        </ul>
+
+        <div class="center-container">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search for furniture"
+              id="search-input"
+            />
+            <label for="search-input" class="search-icon-label">
+              <img
+                src="images/search-icon.svg"
+                alt="Search"
+                class="search-icon"
+              />
+            </label>
+          </div>
+        </div>
+      </nav>
+
+      <div class="hero-image">
+        <div class="hero-text">
+          <h1>Yacouba's Furniture</h1>
+          <h2>Discover Your Perfect Space</h2>
+          <p>Explore our wide range of stylish furniture.</p>
+          <button
+            class="shop-now"
+            onclick="window.location.href='#featured-products'"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+
+    <script>
+      function toggleMenu() {
+        const menu = document.querySelector(".nav-links");
+        const searchContainer = document.querySelector(".search-container");
+        menu.classList.toggle("active");
+        searchContainer.classList.toggle("active");
+      }
+    </script>
+  </body>
+</html>
