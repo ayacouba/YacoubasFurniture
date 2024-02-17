@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Yacouba's Furniture</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles/styles.css" />
   </head>
   <body>
@@ -62,6 +64,36 @@
       </div>
     </header>
 
+    <main>
+      <section class="product-details">
+        <img
+          src="images/sofa.png"
+          alt="Green and Tan Sofa"
+          class="product-details-image"
+        />
+        <h1 class="product-title">Green and Tan Sofa</h1>
+        <p class="product-description">
+          A comfortable green and tan sofa with white and gold pillows.
+        </p>
+        <p class="product-price">$999.99</p>
+        <button class="add-to-cart">Add to Cart</button>
+
+        <div class="additional-info">
+          <h2>Specifications</h2>
+          <ul>
+            <li>Color: Green and Tan</li>
+            <li>Material: Leather</li>
+            <li>Dimensions: 84" W x 35" H x 38" D</li>
+          </ul>
+        </div>
+
+        <div class="customer-reviews">
+          <h2>Customer Reviews</h2>
+          <p>★★★★☆ - "Very comfortable and stylish!" - Jane Doe</p>
+        </div>
+      </section>
+    </main>
+
     <footer>
       <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
     </footer>
@@ -79,6 +111,7 @@
           }
         });
       });
+
       window.addEventListener("load", (event) => {
         const menu = document.querySelector(".nav-links");
         if (menu.classList.contains("active")) {

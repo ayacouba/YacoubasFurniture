@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Yacouba's Furniture</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles/styles.css" />
   </head>
   <body>
@@ -16,11 +18,11 @@
           onclick="toggleMenu()"
         />
         <ul class="nav-links">
-          <li><a href="products.html">Chairs</a></li>
-          <li><a href="products.html">Tables</a></li>
-          <li><a href="products.html">Sofas</a></li>
+          <li><a href="#chairs">Chairs</a></li>
+          <li><a href="#tables">Tables</a></li>
+          <li><a href="#sofas">Sofas</a></li>
           <li>
-            <a href="cart.html">
+            <a href="#cart">
               <img
                 src="images/shopping-cart.svg"
                 alt="Cart"
@@ -54,13 +56,46 @@
           <p>Explore our wide range of stylish furniture.</p>
           <button
             class="shop-now"
-            onclick="window.location.href='products.html?product'"
+            onclick="window.location.href='#featured-products'"
           >
             Shop Now
           </button>
         </div>
       </div>
     </header>
+
+    <main>
+      <section class="product-list">
+        <article class="product-item">
+          <img
+            src="images/sofa.png"
+            alt="Green and Tan Sofa"
+            class="product-image"
+          />
+          <h3 class="product-name">Green and Tan Sofa</h3>
+          <p class="product-price">$999.99</p>
+          <a href="details.html" class="product-details-link">View Details</a>
+        </article>
+
+        <article class="product-item">
+          <img
+            src="images/dinner-table.png"
+            alt="dinner-table"
+            class="product-image"
+          />
+          <h3 class="product-name">Brown Wooden Dinner Table</h3>
+          <p class="product-price">$649.99</p>
+          <a href="details.html" class="product-details-link">View Details</a>
+        </article>
+
+        <article class="product-item">
+          <img src="images/chair.png" alt="Brown chair" class="product-image" />
+          <h3 class="product-name">Brown chair</h3>
+          <p class="product-price">$99.99</p>
+          <a href="details.html" class="product-details-link">View Details</a>
+        </article>
+      </section>
+    </main>
 
     <footer>
       <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
