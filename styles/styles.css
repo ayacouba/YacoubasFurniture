@@ -12,7 +12,7 @@ body {
 }
 
 nav {
-  background: #005f73; /* Deep blue shade */
+  background: #005f73;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -129,7 +129,7 @@ nav ul li a img {
 }
 
 footer {
-  background: #002529; /* Darker shade of blue */
+  background: #002529;
   color: #fff;
   text-align: center;
   padding: 1rem;
