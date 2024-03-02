@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Admin - Bulk Upload</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/admin.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="bulkupload.html">Bulk Upload</a></li>
+          <li><a href="product-edit.html">Edit Product</a></li>
+          <li><a href="signout.html">Sign Out</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="bulk-upload">
+        <h1>Bulk Upload Products</h1>
+        <p>Select a file with product data to upload.</p>
+        <form action="#" method="post" enctype="multipart/form-data">
+          <input
+            type="file"
+            id="fileUpload"
+            name="fileUpload"
+            accept=".json, .csv, .txt"
+          />
+          <button type="submit">Upload File</button>
+        </form>
+        <div class="file-format-example">
+          <h2>Example File Format</h2>
+          <pre>
+{
+"products": [
+  {
+      "name": "Green and Tan Sofa",
+      "description": "A comfortable green and tan sofa with white and gold pillows.",
+      "category": "Sofas",
+      "imagePath": "images/sofa.png",
+      "price": 999.99
+  },
+  {
+      "name": "Wooden Dinner Table",
+      "description": "A sturdy wooden dinner table.",
+      "category": "Tables",
+      "imagePath": "images/dinner-table.png",
+      "price": 649.99
+  }
+  // More products
+]
+}</pre
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+    <script></script>
+  </body>
+</html>

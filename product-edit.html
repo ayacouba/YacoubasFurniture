@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Admin - Product Edit</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/admin.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="bulkupload.html">Bulk Upload</a></li>
+          <li><a href="product-edit.html">Edit Product</a></li>
+          <li><a href="signout.html">Sign Out</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="product-selection">
+        <h1>Edit Product</h1>
+        <p>Select a product to edit or add a new product:</p>
+
+        <!-- Dropdown for selecting a product to edit -->
+        <label for="productSelect">Choose a product:</label>
+        <select id="productSelect" name="productSelect">
+          <option value="">Select a Product...</option>
+          <option value="sofa">Green and Tan Sofa</option>
+          <option value="table">Wooden Dinner Table</option>
+          <option value="chair">Classic Brown Chair</option>
+          <!-- Additional products here -->
+        </select>
+
+        <label for="productSearch">Or search for a product:</label>
+        <input
+          type="text"
+          id="productSearch"
+          oninput="searchProduct()"
+          placeholder="Type to search..."
+        />
+
+        <button onclick="addNewProduct()">Add New Product</button>
+      </section>
+
+      <section class="product-edit-form">
+        <form>
+          <label for="productName">Name:</label>
+          <input type="text" id="productName" name="productName" />
+
+          <label for="productDescription">Description:</label>
+          <textarea
+            id="productDescription"
+            name="productDescription"
+          ></textarea>
+
+          <label for="productCategory">Category:</label>
+          <input type="text" id="productCategory" name="productCategory" />
+
+          <label for="productImage">Image Path:</label>
+          <input type="text" id="productImage" name="productImage" />
+
+          <label for="productPrice">Price:</label>
+          <input type="text" id="productPrice" name="productPrice" />
+
+          <button type="submit">Save Changes</button>
+          <button
+            type="button"
+            onclick="window.location='add-new-product.html';"
+          >
+            Add New Product
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
