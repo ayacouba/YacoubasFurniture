@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Yacouba's Furniture</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <img
+          src="images/burger.svg"
+          alt="Menu"
+          class="menu-icon"
+          onclick="toggleMenu()"
+        />
+        <ul class="nav-links">
+          <li><a href="products.html">Chairs</a></li>
+          <li><a href="products.html">Tables</a></li>
+          <li><a href="products.html">Sofas</a></li>
+          <li>
+            <a href="cart.html">
+              <img
+                src="images/shopping-cart.svg"
+                alt="Cart"
+                class="cart-icon"
+              />
+            </a>
+          </li>
+          <li><a href="#sign-in">Sign In</a></li>
+        </ul>
+        <div class="center-container">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search for furniture"
+              id="search-input"
+            />
+            <label for="search-input" class="search-icon-label">
+              <img
+                src="images/search-icon.svg"
+                alt="Search"
+                class="search-icon"
+              />
+            </label>
+          </div>
+        </div>
+      </nav>
+      <div class="hero-image">
+        <div class="hero-text">
+          <h1>Yacouba's Furniture</h1>
+          <h2>Discover Your Perfect Space</h2>
+          <p>Explore our wide range of stylish furniture.</p>
+          <button
+            class="shop-now"
+            onclick="window.location.href='products.html?product'"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="product-details">
+        <img
+          src="images/sofa.png"
+          alt="Green and Tan Sofa"
+          class="product-details-image"
+        />
+        <h1 class="product-title">Green and Tan Sofa</h1>
+        <p class="product-description">
+          A comfortable green and tan sofa with white and gold pillows.
+        </p>
+        <p class="product-price">$999.99</p>
+        <button class="add-to-cart">Add to Cart</button>
+
+        <div class="additional-info">
+          <h2>Specifications</h2>
+          <ul>
+            <li>Color: Green and Tan</li>
+            <li>Material: Leather</li>
+            <li>Dimensions: 84" W x 35" H x 38" D</li>
+          </ul>
+        </div>
+
+        <div class="customer-reviews">
+          <h2>Customer Reviews</h2>
+          <p>★★★★☆ - "Very comfortable and stylish!" - Jane Doe</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+    <script>
+      function toggleMenu() {
+        const menu = document.querySelector(".nav-links");
+        menu.classList.toggle("active");
+      }
+
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          const menu = document.querySelector(".nav-links");
+          if (menu.classList.contains("active")) {
+            menu.classList.remove("active");
+          }
+        });
+      });
+
+      window.addEventListener("load", (event) => {
+        const menu = document.querySelector(".nav-links");
+        if (menu.classList.contains("active")) {
+          menu.classList.remove("active");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const userId = localStorage.getItem("userId");
+        const queryParams = new URLSearchParams(window.location.search);
+        const productId = queryParams.get("id");
+
+        fetch(`/api/products/${productId}`)
+          .then((response) => response.json())
+          .then((product) => {
+            document.querySelector(".product-details-image").src =
+              product.image_url;
+            document.querySelector(".product-title").textContent = product.name;
+            document.querySelector(".product-description").textContent =
+              product.description;
+            document.querySelector(
+              ".product-price"
+            ).textContent = `$${product.price.toFixed(2)}`;
+
+            const addToCartButton = document.querySelector(".add-to-cart");
+            addToCartButton.dataset.productId = product.id;
+          })
+          .catch((error) =>
+            console.error("Error fetching product details:", error)
+          );
+
+        document
+          .querySelector(".add-to-cart")
+          .addEventListener("click", function () {
+            if (!userId) {
+              alert("You must be logged in to add items to the cart.");
+              return;
+            }
+
+            const productId = this.dataset.productId;
+            const quantity = 1;
+
+            fetch(`/api/carts/${userId}/add`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ productId, quantity }),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Problem adding item to cart");
+                }
+                return response.json();
+              })
+              .then((data) => {
+                alert("Item added to cart");
+                // Optionally, redirect to the cart page or update the cart UI
+              })
+              .catch((error) => {
+                console.error("Error adding item to cart:", error);
+                alert("Error adding item to cart.");
+              });
+          });
+      });
+    </script>
+  </body>
+</html>

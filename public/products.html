@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Yacouba's Furniture</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <img
+          src="images/burger.svg"
+          alt="Menu"
+          class="menu-icon"
+          onclick="toggleMenu()"
+        />
+        <ul class="nav-links">
+          <li><a href="#chairs">Chairs</a></li>
+          <li><a href="#tables">Tables</a></li>
+          <li><a href="#sofas">Sofas</a></li>
+          <li>
+            <a href="#cart">
+              <img
+                src="images/shopping-cart.svg"
+                alt="Cart"
+                class="cart-icon"
+              />
+            </a>
+          </li>
+          <li><a href="#sign-in">Sign In</a></li>
+        </ul>
+        <div class="center-container">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search for furniture"
+              id="search-input"
+            />
+            <label for="search-input" class="search-icon-label">
+              <img
+                src="images/search-icon.svg"
+                alt="Search"
+                class="search-icon"
+              />
+            </label>
+          </div>
+        </div>
+      </nav>
+      <div class="hero-image">
+        <div class="hero-text">
+          <h1>Yacouba's Furniture</h1>
+          <h2>Discover Your Perfect Space</h2>
+          <p>Explore our wide range of stylish furniture.</p>
+          <button
+            class="shop-now"
+            onclick="window.location.href='#featured-products'"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="product-list" id="productList"></section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+    <script>
+      function toggleMenu() {
+        const menu = document.querySelector(".nav-links");
+        menu.classList.toggle("active");
+      }
+
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          const menu = document.querySelector(".nav-links");
+          if (menu.classList.contains("active")) {
+            menu.classList.remove("active");
+          }
+        });
+      });
+      window.addEventListener("load", (event) => {
+        const menu = document.querySelector(".nav-links");
+        if (menu.classList.contains("active")) {
+          menu.classList.remove("active");
+        }
+      });
+      window.addEventListener("load", () => {
+        fetch("/api/products")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((products) => {
+            const productListElement = document.getElementById("productList");
+            productListElement.innerHTML = "";
+
+            products.forEach((product) => {
+              const productHTML = `
+    <article class="product-item">
+      <img src="${product.image_url}" alt="${
+                product.name
+              }" class="product-image" />
+      <h3 class="product-name">${product.name}</h3>
+      <p class="product-price">$${product.price.toFixed(2)}</p>
+      <a href="details.html?id=${
+        product.id
+      }" class="product-details-link">View Details</a>
+    </article>
+  `;
+              productListElement.innerHTML += productHTML;
+            });
+          })
+          .catch((err) => {
+            console.error("Error fetching products:", err);
+          });
+      });
+    </script>
+  </body>
+</html>

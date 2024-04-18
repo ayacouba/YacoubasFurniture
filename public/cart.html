@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Yacouba's Furniture</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <img
+          src="images/burger.svg"
+          alt="Menu"
+          class="menu-icon"
+          onclick="toggleMenu()"
+        />
+        <ul class="nav-links">
+          <li><a href="products.html">Chairs</a></li>
+          <li><a href="products.html">Tables</a></li>
+          <li><a href="products.html">Sofas</a></li>
+          <li>
+            <a href="cart.html">
+              <img
+                src="images/shopping-cart.svg"
+                alt="Cart"
+                class="cart-icon"
+              />
+            </a>
+          </li>
+          <li><a href="#sign-in">Sign In</a></li>
+        </ul>
+        <div class="center-container">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search for furniture"
+              id="search-input"
+            />
+            <label for="search-input" class="search-icon-label">
+              <img
+                src="images/search-icon.svg"
+                alt="Search"
+                class="search-icon"
+              />
+            </label>
+          </div>
+        </div>
+      </nav>
+      <div class="hero-image">
+        <div class="hero-text">
+          <h1>Yacouba's Furniture</h1>
+          <h2>Discover Your Perfect Space</h2>
+          <p>Explore our wide range of stylish furniture.</p>
+          <button
+            class="shop-now"
+            onclick="window.location.href='products.html?product'"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="shopping-cart">
+      </section>
+      <div class="cart-totals">
+        <div class="subtotal">
+          <span>Subtotal</span>
+          <span>$0.00</span>
+        </div>
+        <div class="taxes">
+          <span>Tax (6.75%)</span>
+          <span>$0.00</span>
+        </div>
+        <div class="delivery-fee">
+          <span>Delivery Fee</span>
+          <span>$0.00</span>
+        </div>
+        <div class="service-fee">
+          <span>Service Fee</span>
+          <span>$0.00</span>
+        </div>
+        <div class="total">
+          <strong>Total</strong>
+          <strong>$0.00</strong>
+        </div>
+        <button class="checkout-button" style="display: none">Checkout</button>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
+    </footer>
+    <script>
+      function toggleMenu() {
+        const menu = document.querySelector(".nav-links");
+        menu.classList.toggle("active");
+      }
+
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          const menu = document.querySelector(".nav-links");
+          if (menu.classList.contains("active")) {
+            menu.classList.remove("active");
+          }
+        });
+      });
+
+      window.addEventListener("load", (event) => {
+        const menu = document.querySelector(".nav-links");
+        if (menu.classList.contains("active")) {
+          menu.classList.remove("active");
+        }
+      });
+
+      // Function to fetch and update the cart
+      function fetchAndUpdateCart(userId) {
+        fetch(`/api/carts/${userId}`)
+          .then((response) => response.json())
+          .then((cartData) => {
+            const cartContainer = document.querySelector(".shopping-cart");
+
+            let subtotal = 0;
+
+            cartData.items.forEach((item) => {
+              const itemTotal = item.price * item.quantity;
+              subtotal += itemTotal;
+
+              const cartItem = document.createElement("article");
+              cartItem.className = "cart-item";
+              cartItem.innerHTML = `
+          <img src="${item.image_url}" alt="${
+                item.name
+              }" class="cart-item-image" />
+          <h3 class="cart-item-name">${item.name}</h3>
+          <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+          <input type="number" class="cart-item-quantity" value="${
+            item.quantity
+          }" data-product-id="${item.id}" />
+          <button class="cart-item-update" data-product-id="${
+            item.id
+          }">Update</button>
+          <button class="cart-item-remove" data-product-id="${
+            item.id
+          }">Remove</button>
+        `;
+              cartContainer.appendChild(cartItem);
+            });
+            console.log(cartData.items);
+            // Calculate taxes, delivery fee, service fee, and total
+            const taxRate = 0.0675;
+            const taxes = subtotal * taxRate;
+            const deliveryFee = 15.0;
+            const serviceFee = 10.0;
+            const total = subtotal + taxes + deliveryFee + serviceFee;
+
+            // Update the totals display
+            document.querySelector(
+              ".subtotal span:last-child"
+            ).textContent = `$${subtotal.toFixed(2)}`;
+            document.querySelector(
+              ".taxes span:last-child"
+            ).textContent = `$${taxes.toFixed(2)}`;
+            document.querySelector(
+              ".delivery-fee span:last-child"
+            ).textContent = `$${deliveryFee.toFixed(2)}`;
+            document.querySelector(
+              ".service-fee span:last-child"
+            ).textContent = `$${serviceFee.toFixed(2)}`;
+            document.querySelector(
+              ".total strong:last-child"
+            ).textContent = `$${total.toFixed(2)}`;
+
+            // Show the checkout button only if the cart is not empty
+            const checkoutButton = document.querySelector(".checkout-button");
+            checkoutButton.style.display =
+              cartData.items.length > 0 ? "block" : "none";
+            console.log("Fetching cart for user:", userId);
+            console.log("Cart data received:", cartData);
+          })
+          .catch((err) => console.error("Error fetching cart:", err));
+      }
+      // Function to update cart item quantity
+      function updateCartItem(userId, productId, quantity) {
+        fetch(`/api/carts/${userId}/update`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, quantity }),
+        })
+          .then((response) => response.json())
+          .then(() => fetchAndUpdateCart(userId)) // Refresh the cart display
+          .catch((err) => console.error("Error updating cart item:", err));
+      }
+
+      // Function to remove an item from the cart
+      function removeCartItem(userId, productId) {
+        fetch(`/api/carts/${userId}/remove`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+        })
+          .then((response) => response.json())
+          .then(() => fetchAndUpdateCart(userId)) 
+          .catch((err) => console.error("Error removing cart item:", err));
+      }
+
+      // Function to perform the checkout
+      function checkout(userId) {
+        fetch(`/api/carts/${userId}/checkout`, {
+          method: "POST",
+        })
+          .then((response) => response.json())
+          .then(() => {
+            alert("Checkout successful!");
+            fetchAndUpdateCart(userId); 
+          })
+          .catch((err) => console.error("Error during checkout:", err));
+      }
+
+      // Event listener for page load to fetch the cart
+      document.addEventListener("DOMContentLoaded", () => {
+        const userId = localStorage.getItem("userId"); // Retrieve the user ID from local storage
+        if (userId) {
+          fetchAndUpdateCart(userId);
+        } else {
+          console.error("User is not logged in.");
+        }
+      });
+
+      document
+        .querySelector(".checkout-button")
+        .addEventListener("click", () => {
+          const userId = localStorage.getItem("userId");
+          if (userId) {
+            checkout(userId);
+          }
+        });
+    </script>
+  </body>
+</html>

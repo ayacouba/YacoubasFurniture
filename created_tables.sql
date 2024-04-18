@@ -31,13 +31,13 @@ CREATE TABLE IF NOT EXISTS products (
   category_id INTEGER, 
   is_featured BIT NOT NULL, 
   FOREIGN KEY (category_id) REFERENCES categories (id) 
-)
+);
 
 CREATE TABLE IF NOT EXISTS cart_products (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   cart_id INTEGER NOT NULL, 
   product_id INTEGER NOT NULL, 
-  quantity INTEGER NOT NULL
+  quantity INTEGER NOT NULL,
   FOREIGN KEY (cart_id) REFERENCES carts(id),
   FOREIGN KEY (product_id) REFERENCES Products(id)
 );
