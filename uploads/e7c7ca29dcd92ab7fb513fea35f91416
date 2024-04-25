@@ -1,0 +1,12 @@
+{
+  "products": [
+    {
+      "name": "Grey Sofa",
+      "description": "A sleek and comfortable grey sofa, perfect for modern living rooms.",
+      "category": "Sofas",
+      "imagePath": "images/grey-sofa.png",
+      "price": 899.99,
+      "is_featured": 1
+    }
+  ]
+}

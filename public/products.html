@@ -18,9 +18,9 @@
           onclick="toggleMenu()"
         />
         <ul class="nav-links">
-          <li><a href="#chairs">Chairs</a></li>
-          <li><a href="#tables">Tables</a></li>
-          <li><a href="#sofas">Sofas</a></li>
+          <li><a href="javascript:void(0)" data-category-id="3">Chairs</a></li>
+          <li><a href="javascript:void(0)" data-category-id="2">Tables</a></li>
+          <li><a href="javascript:void(0)" data-category-id="1">Sofas</a></li>
           <li>
             <a href="#cart">
               <img
@@ -65,6 +65,7 @@
     </header>
 
     <main>
+      <select id="currencySelector"></select>
       <section class="product-list" id="productList"></section>
     </main>
 
@@ -91,37 +92,121 @@
           menu.classList.remove("active");
         }
       });
-      window.addEventListener("load", () => {
-        fetch("/api/products")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
+      document
+        .querySelectorAll(".nav-links a[data-category-id]")
+        .forEach((link) => {
+          link.addEventListener("click", (event) => {
+            event.preventDefault();
+            const categoryId = link.getAttribute("data-category-id");
+            fetchAndDisplayProductsByCategory(categoryId);
+          });
+        });
+      const apiKey = "b6523700b4bc002eb8ad5e43";
+      let currentRates = null;
+      function convertCurrency(amount, base, target) {
+        if (base !== "USD") {
+          amount /= currentRates[base];
+        }
+        return (amount * currentRates[target]).toFixed(2);
+      }
+
+      // Function to fetch currencies and rates
+      function fetchCurrencies() {
+        fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`)
+          .then((response) => response.json())
+          .then((data) => {
+            currentRates = data.conversion_rates;
+            populateCurrencySelector(Object.keys(currentRates));
           })
+          .catch((error) =>
+            console.error("Error fetching exchange rates: ", error)
+          );
+      }
+
+      // Function to populate the currency selector dropdown
+      function populateCurrencySelector(currencies) {
+        const currencySelector = document.getElementById("currencySelector");
+        currencies.forEach((currency) => {
+          currencySelector.add(new Option(currency, currency));
+        });
+      }
+
+      // Event listener for currency selection change
+      document
+        .getElementById("currencySelector")
+        .addEventListener("change", function () {
+          const selectedCurrency = this.value;
+          updateProductPrices(selectedCurrency);
+        });
+
+      // Function to update product prices based on selected currency
+      function updateProductPrices(selectedCurrency) {
+        document.querySelectorAll(".product-item").forEach((item) => {
+          const priceElement = item.querySelector(".product-price");
+          const priceInUSD = parseFloat(
+            priceElement.getAttribute("data-usd-price")
+          );
+          const convertedPrice = convertCurrency(
+            priceInUSD,
+            "USD",
+            selectedCurrency
+          );
+          priceElement.textContent = `${convertedPrice} ${selectedCurrency}`;
+        });
+      }
+
+      function fetchAndDisplayProductsByCategory(categoryId) {
+        fetch(`/api/category/${categoryId}`)
+          .then((response) => response.json())
           .then((products) => {
-            const productListElement = document.getElementById("productList");
-            productListElement.innerHTML = "";
+            const productList = document.querySelector(".product-list");
+            productList.innerHTML = "";
 
             products.forEach((product) => {
               const productHTML = `
-    <article class="product-item">
-      <img src="${product.image_url}" alt="${
+          <article class="product-item">
+            <img src="${product.image_url}" alt="${
                 product.name
               }" class="product-image" />
-      <h3 class="product-name">${product.name}</h3>
-      <p class="product-price">$${product.price.toFixed(2)}</p>
-      <a href="details.html?id=${
-        product.id
-      }" class="product-details-link">View Details</a>
-    </article>
-  `;
-              productListElement.innerHTML += productHTML;
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-price">$${product.price.toFixed(2)}</p>
+            <a href="details.html?id=${
+              product.id
+            }" class="product-details-link">View Details</a>
+          </article>
+        `;
+              productList.innerHTML += productHTML;
             });
           })
-          .catch((err) => {
-            console.error("Error fetching products:", err);
-          });
+          .catch((error) =>
+            console.error("Error loading category products:", error)
+          );
+      }
+
+      function displayProducts(products) {
+        const productListElement = document.getElementById("productList");
+        productListElement.innerHTML = "";
+
+        products.forEach((product) => {
+          const productHTML = `
+        <article class="product-item">
+          <img src="${product.image_url}" alt="${product.name}" class="product-image" />
+          <h3 class="product-name">${product.name}</h3>
+          <p class="product-price" data-usd-price="${product.price}">$${product.price}</p>
+          <a href="details.html?id=${product.id}" class="product-details-link">View Details</a>
+        </article>
+        `;
+          productListElement.innerHTML += productHTML;
+        });
+        updateProductPrices("USD");
+      }
+
+      window.addEventListener("load", () => {
+        fetchCurrencies();
+        fetch("/api/products")
+          .then((response) => response.json())
+          .then(displayProducts)
+          .catch((err) => console.error("Error fetching products:", err));
       });
     </script>
   </body>

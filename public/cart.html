@@ -65,8 +65,7 @@
     </header>
 
     <main>
-      <section class="shopping-cart">
-      </section>
+      <section class="shopping-cart"></section>
       <div class="cart-totals">
         <div class="subtotal">
           <span>Subtotal</span>
@@ -122,7 +121,7 @@
           .then((response) => response.json())
           .then((cartData) => {
             const cartContainer = document.querySelector(".shopping-cart");
-
+            cartContainer.innerHTML = "";
             let subtotal = 0;
 
             cartData.items.forEach((item) => {
@@ -132,58 +131,47 @@
               const cartItem = document.createElement("article");
               cartItem.className = "cart-item";
               cartItem.innerHTML = `
-          <img src="${item.image_url}" alt="${
+            <img src="${item.image_url}" alt="${
                 item.name
               }" class="cart-item-image" />
-          <h3 class="cart-item-name">${item.name}</h3>
-          <p class="cart-item-price">$${item.price.toFixed(2)}</p>
-          <input type="number" class="cart-item-quantity" value="${
-            item.quantity
-          }" data-product-id="${item.id}" />
-          <button class="cart-item-update" data-product-id="${
-            item.id
-          }">Update</button>
-          <button class="cart-item-remove" data-product-id="${
-            item.id
-          }">Remove</button>
-        `;
+            <h3 class="cart-item-name">${item.name}</h3>
+            <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+            <input type="number" class="cart-item-quantity" value="${
+              item.quantity
+            }" data-product-id="${item.id}" />
+            <button class="cart-item-update" data-product-id="${
+              item.id
+            }">Update</button>
+            <button class="cart-item-remove" data-product-id="${
+              item.id
+            }">Remove</button>
+          `;
               cartContainer.appendChild(cartItem);
             });
-            console.log(cartData.items);
-            // Calculate taxes, delivery fee, service fee, and total
-            const taxRate = 0.0675;
-            const taxes = subtotal * taxRate;
-            const deliveryFee = 15.0;
-            const serviceFee = 10.0;
-            const total = subtotal + taxes + deliveryFee + serviceFee;
 
-            // Update the totals display
-            document.querySelector(
-              ".subtotal span:last-child"
-            ).textContent = `$${subtotal.toFixed(2)}`;
-            document.querySelector(
-              ".taxes span:last-child"
-            ).textContent = `$${taxes.toFixed(2)}`;
-            document.querySelector(
-              ".delivery-fee span:last-child"
-            ).textContent = `$${deliveryFee.toFixed(2)}`;
-            document.querySelector(
-              ".service-fee span:last-child"
-            ).textContent = `$${serviceFee.toFixed(2)}`;
-            document.querySelector(
-              ".total strong:last-child"
-            ).textContent = `$${total.toFixed(2)}`;
+            setupCartEventListeners(cartContainer, userId);
 
-            // Show the checkout button only if the cart is not empty
-            const checkoutButton = document.querySelector(".checkout-button");
-            checkoutButton.style.display =
-              cartData.items.length > 0 ? "block" : "none";
-            console.log("Fetching cart for user:", userId);
-            console.log("Cart data received:", cartData);
+            // Update totals
+            updateTotals(subtotal);
           })
           .catch((err) => console.error("Error fetching cart:", err));
       }
-      // Function to update cart item quantity
+
+      function setupCartEventListeners(cartContainer, userId) {
+        cartContainer.addEventListener("click", (event) => {
+          const productId = event.target.dataset.productId;
+          if (event.target.matches(".cart-item-update")) {
+            const quantityInput = document.querySelector(
+              `.cart-item-quantity[data-product-id="${productId}"]`
+            );
+            const quantity = quantityInput.value;
+            updateCartItem(userId, productId, quantity);
+          } else if (event.target.matches(".cart-item-remove")) {
+            removeCartItem(userId, productId);
+          }
+        });
+      }
+
       function updateCartItem(userId, productId, quantity) {
         fetch(`/api/carts/${userId}/update`, {
           method: "POST",
@@ -191,11 +179,10 @@
           body: JSON.stringify({ productId, quantity }),
         })
           .then((response) => response.json())
-          .then(() => fetchAndUpdateCart(userId)) // Refresh the cart display
+          .then(() => fetchAndUpdateCart(userId))
           .catch((err) => console.error("Error updating cart item:", err));
       }
 
-      // Function to remove an item from the cart
       function removeCartItem(userId, productId) {
         fetch(`/api/carts/${userId}/remove`, {
           method: "POST",
@@ -203,10 +190,36 @@
           body: JSON.stringify({ productId }),
         })
           .then((response) => response.json())
-          .then(() => fetchAndUpdateCart(userId)) 
+          .then(() => fetchAndUpdateCart(userId))
           .catch((err) => console.error("Error removing cart item:", err));
       }
 
+      function updateTotals(subtotal) {
+        const taxRate = 0.0675;
+        const taxes = subtotal * taxRate;
+        const deliveryFee = 15.0;
+        const serviceFee = 10.0;
+        const total = subtotal + taxes + deliveryFee + serviceFee;
+
+        document.querySelector(
+          ".subtotal span:last-child"
+        ).textContent = `$${subtotal.toFixed(2)}`;
+        document.querySelector(
+          ".taxes span:last-child"
+        ).textContent = `$${taxes.toFixed(2)}`;
+        document.querySelector(
+          ".delivery-fee span:last-child"
+        ).textContent = `$${deliveryFee.toFixed(2)}`;
+        document.querySelector(
+          ".service-fee span:last-child"
+        ).textContent = `$${serviceFee.toFixed(2)}`;
+        document.querySelector(
+          ".total strong:last-child"
+        ).textContent = `$${total.toFixed(2)}`;
+
+        const checkoutButton = document.querySelector(".checkout-button");
+        checkoutButton.style.display = subtotal > 0 ? "block" : "none";
+      }
       // Function to perform the checkout
       function checkout(userId) {
         fetch(`/api/carts/${userId}/checkout`, {
@@ -215,14 +228,13 @@
           .then((response) => response.json())
           .then(() => {
             alert("Checkout successful!");
-            fetchAndUpdateCart(userId); 
+            fetchAndUpdateCart(userId);
           })
           .catch((err) => console.error("Error during checkout:", err));
       }
 
-      // Event listener for page load to fetch the cart
       document.addEventListener("DOMContentLoaded", () => {
-        const userId = localStorage.getItem("userId"); // Retrieve the user ID from local storage
+        const userId = localStorage.getItem("userId"); 
         if (userId) {
           fetchAndUpdateCart(userId);
         } else {

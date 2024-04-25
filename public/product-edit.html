@@ -14,7 +14,6 @@
         <ul>
           <li><a href="bulkupload.html">Bulk Upload</a></li>
           <li><a href="product-edit.html">Edit Product</a></li>
-          <li><a href="signout.html">Sign Out</a></li>
         </ul>
       </nav>
     </header>
@@ -77,5 +76,115 @@
     <footer>
       <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
     </footer>
+    <script>
+      const categoriesCache = {};
+
+      function fetchCategories() {
+        return fetch("/api/categories")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((categories) => {
+            categories.forEach((category) => {
+              categoriesCache[category.id] = category.name;
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching categories:", error);
+          });
+      }
+      // Function to retrieve the category name by ID
+      function getCategoryNameById(categoryId) {
+        return categoriesCache[categoryId] || "Unknown Category";
+      }
+
+      // Function to clear form fields
+      function clearFormFields() {
+        document.getElementById("productName").value = "";
+        document.getElementById("productDescription").value = "";
+        document.getElementById("productCategory").value = "";
+        document.getElementById("productImage").value = "";
+        document.getElementById("productPrice").value = "";
+      }
+
+      // Populate the product details in the form
+      function updateProductForm(productId) {
+        fetch(`/api/products/${productId}`)
+          .then((response) => response.json())
+          .then((product) => {
+            document.getElementById("productName").value = product.name;
+            document.getElementById("productDescription").value =
+              product.description;
+            document.getElementById("productCategory").value =
+              getCategoryNameById(product.category_id);
+            document.getElementById("productImage").value = product.image_url;
+            document.getElementById("productPrice").value = product.price;
+          })
+          .catch((error) => {
+            console.error("Error fetching product details:", error);
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        fetchCategories().then(() => {
+          const productSelect = document.getElementById("productSelect");
+
+          fetch("/api/products")
+            .then((response) => response.json())
+            .then((products) => {
+              products.forEach((product) => {
+                const option = new Option(product.name, product.id);
+                productSelect.add(option);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching products:", error);
+            });
+
+          productSelect.addEventListener("change", function () {
+            const productId = this.value;
+            if (productId) {
+              updateProductForm(productId);
+            } else {
+              clearFormFields();
+            }
+          });
+        });
+
+        document
+          .querySelector(".product-edit-form form")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            const productId = document.getElementById("productSelect").value;
+            const productData = {
+              name: document.getElementById("productName").value,
+              description: document.getElementById("productDescription").value,
+              category_id: getCategoryNameById(
+                document.getElementById("productCategory").value
+              ),
+              image_url: document.getElementById("productImage").value,
+              price: document.getElementById("productPrice").value,
+            };
+
+            fetch(`/api/products/${productId}/update`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(productData),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Error saving product changes");
+                }
+                alert("Product updated successfully!");
+              })
+              .catch((error) => {
+                console.error("Error saving product changes:", error);
+              });
+          });
+      });
+    </script>
   </body>
 </html>

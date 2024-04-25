@@ -19,6 +19,12 @@
           <li><a href="products.html">Chairs</a></li>
           <li><a href="products.html">Tables</a></li>
           <li><a href="products.html">Sofas</a></li>
+          <li class="admin-link" style="display: none">
+            <a href="bulkupload.html">Bulk Upload</a>
+          </li>
+          <li class="admin-link" style="display: none">
+            <a href="product-edit.html">Edit Product</a>
+          </li>
           <li>
             <a href="cart.html">
               <img
@@ -29,6 +35,12 @@
             </a>
           </li>
           <li><a href="javascript:void(0)" id="signInLink">Sign In</a></li>
+          <li>
+            <a href="javascript:void(0)" id="signOutLink" style="display: none"
+              >Sign Out</a
+            >
+          </li>
+
           <li style="display: none" id="userGreeting">
             Welcome, <span id="userName">User</span>!
           </li>
@@ -98,25 +110,52 @@
           menu.classList.remove("active");
         }
       });
-      function updateUserInterface(isLoggedIn, userName) {
+      document.addEventListener("DOMContentLoaded", function () {
+        const signOutLink = document.getElementById("signOutLink");
+        if (signOutLink) {
+          signOutLink.addEventListener("click", function () {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userName");
+            updateUserInterface(false);
+            window.location.href = "index.html"; 
+          });
+        }
+
+        const userId = localStorage.getItem("userId");
+        const userName = localStorage.getItem("userName");
+        updateUserInterface(!!userId, userName);
+      });
+
+      function updateUserInterface(isLoggedIn, userName, userType) {
         const signInLink = document.getElementById("signInLink");
+        const signOutLink = document.getElementById("signOutLink");
         const userGreeting = document.getElementById("userGreeting");
         const userNameSpan = document.getElementById("userName");
 
+        // Admin specific elements
+        const adminLinks = document.querySelectorAll(".admin-link");
+        adminLinks.forEach(
+          (link) =>
+            (link.style.display = userType === "admin" ? "block" : "none")
+        );
+
         if (isLoggedIn) {
-          signInLink.style.display = "none"; 
-          userGreeting.style.display = "block"; 
-          userNameSpan.textContent = userName; 
+          signInLink.style.display = "none";
+          signOutLink.style.display = "block";
+          userGreeting.style.display = "block";
+          userNameSpan.textContent = userName;
         } else {
-          signInLink.style.display = "block"; 
-          userGreeting.style.display = "none"; 
+          signInLink.style.display = "block";
+          signOutLink.style.display = "none";
+          userGreeting.style.display = "none";
         }
       }
 
       document.addEventListener("DOMContentLoaded", function () {
         const userId = localStorage.getItem("userId");
         const userName = localStorage.getItem("userName");
-
+        const userType = localStorage.getItem("userType");
+        updateUserInterface(!!userId, userName, userType);
         if (userId && userName) {
           updateUserInterface(true, userName);
         }
@@ -126,7 +165,6 @@
           .addEventListener("click", function () {
             document.getElementById("signInForm").style.display = "block";
           });
-
         document
           .getElementById("signInButton")
           .addEventListener("click", function () {
@@ -146,11 +184,11 @@
               })
               .then(function (data) {
                 alert("Login successful!");
-
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("userName", data.name);
+                localStorage.setItem("userType", data.userType);
 
-                updateUserInterface(true, data.name);
+                updateUserInterface(true, data.name, data.userType);
               })
               .catch(function (error) {
                 alert("Login failed: " + error.message);
@@ -158,5 +196,6 @@
           });
       });
     </script>
+    <script src="navbar.js"></script>
   </body>
 </html>

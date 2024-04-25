@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { db } = require("../database");
 
-// Helper function to create a new cart for a user
 function createCart(userId, callback) {
   const status = "new";
   const createdAt = new Date().toISOString();
@@ -19,7 +18,6 @@ function createCart(userId, callback) {
   );
 }
 
-// Helper function to find or create a cart for a user
 function findOrCreateCart(userId, callback) {
   db.get(
     'SELECT * FROM carts WHERE user_id = ? AND status = "new"',
@@ -59,7 +57,6 @@ router.post("/:userId/add", (req, res) => {
   });
 });
 
-// Update the quantity of an item in the cart
 router.post("/:userId/update", (req, res) => {
   const userId = req.params.userId;
   const { productId, quantity } = req.body;

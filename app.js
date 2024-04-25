@@ -7,6 +7,7 @@ const userRoutes = require("./routes/users");
 const productRoutes = require("./routes/products");
 const cartRoutes = require("./routes/carts");
 const signInRoutes = require("./routes/signin");
+const categoriesRoute = require("./routes/categories");
 
 app.use(
   session({
@@ -23,6 +24,7 @@ app.use("/api/carts", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", productRoutes);
 app.use("/api", signInRoutes);
+app.use("/api", categoriesRoute);
 
 app.use(express.static("public"));
 

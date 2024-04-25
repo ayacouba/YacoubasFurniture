@@ -14,7 +14,6 @@
         <ul>
           <li><a href="bulkupload.html">Bulk Upload</a></li>
           <li><a href="product-edit.html">Edit Product</a></li>
-          <li><a href="signout.html">Sign Out</a></li>
         </ul>
       </nav>
     </header>
@@ -62,6 +61,37 @@
     <footer>
       <p>&copy; 2024 Yacouba's Furniture. All rights reserved.</p>
     </footer>
-    <script></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const fileInput = document.getElementById("fileUpload");
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+
+          fetch("/api/products/bulk-upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  "Network response was not ok " + response.statusText
+                );
+              }
+              return response.json();
+            })
+            .then((result) => {
+              alert("File uploaded and processed successfully.");
+            })
+            .catch((error) => {
+              alert("Error processing file: " + error.message);
+            });
+        });
+      });
+    </script>
   </body>
 </html>

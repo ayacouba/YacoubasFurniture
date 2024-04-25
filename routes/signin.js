@@ -15,7 +15,12 @@ router.post("/signin", (req, res) => {
         req.session.userId = user.id;
         req.session.userName = user.name;
         req.session.userType = user.user_type;
-        res.json({ message: "Authentication successful", userId: user.id });
+        res.json({
+          message: "Authentication successful",
+          userId: user.id,
+          name: user.name,
+          userType: user.user_type,
+        });
       } else {
         res.status(401).send("Authentication failed.");
       }
